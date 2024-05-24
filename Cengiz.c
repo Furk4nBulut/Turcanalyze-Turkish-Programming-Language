@@ -36,7 +36,6 @@ int lookup(char ch);
 void expr();
 void factor();
 void term();
-
 void assignment();
 void ifStatement();
 void elseStatement();
@@ -123,8 +122,6 @@ int lookup(char ch) {
             addChar();
             nextToken = ASSIGN_OP;
             break;
-            
-        
         default:
             addChar();
             nextToken = EOF;

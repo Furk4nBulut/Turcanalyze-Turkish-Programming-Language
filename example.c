@@ -50,7 +50,7 @@ void err();
 
 /* Main driver */
 main() {
-	if ((in_fp = fopen("ex4.txt", "r")) == NULL)
+	if ((in_fp = fopen("ex.txt", "r")) == NULL)
  		printf("Hata. \n");
  	else {
  		getChar();

@@ -17,20 +17,20 @@ int nextToken;
 FILE *in_fp, *fopen();
 
 /*
- * <program> -> <bas_op> + <deg> + <atama_op> + <cumle>
- * <bas_op> -> _
- * <deg> -> <harf> <degisken>
- * <degisken> -> <harf> <degisken> | <sayi> <degisken> | <empty>
- * <atama_op> -> =
- * <cumle> -> <islem> | <faktör>
- * <islem> -> <terim> + <terim> | <terim> - <terim>
- * <terim> -> <faktör> * <faktör> | <faktör> / <faktör>
- * <faktör> -> <sayi> <faktör> | <sayi>
- * <sayi> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
- * <harf> -> a | b |c | ç | d | e | f | g | ğ | h | ı | i | j | k | l | m | n | o | ö | p | r | s | ş | t | u | ü | v | y | z
- *
- * write a program that will parse the given grammar and print the result of the parsing.
- * The program should read the input from a file called "front.in" and write the output to a file called "front.out"
+*
+* <program> -> <start_op> <var> <assign_op> <expr> <finish_op>
+* <start_op> -> <
+* <finish_op> -> >
+* <var> -> <type> <id>
+* <type> -> int
+* <id> -> <letter> <id2>
+* <id2> -> <letter> <id2> | <digit> <id2> | ε
+* <expr> -> <term> - <expr> | <term> + <expr> | <term>
+* <term> -> <factor> / <term> | <factor> * <term> | <factor>
+* <factor> -> <digit> <factor> | <digit>
+* <digit> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+* <letter> -> a | b | c | ç | d | e | f | g | ğ | h | ı | i | j | k | l | m | n | o | ö | p | r | s | ş | t | u | ü | v | y | z
+* <assign_op> -> =
  * /
 	*/
 
@@ -41,24 +41,26 @@ void addChar();
 void getChar();
 void getNonBlank();
 int lex();
-/* Custom Function declarations */
 int lookup(char ch);
-void program();
-void bas_op();
-void deg();
-void degisken();
-void atama_op();
-void cumle();
-void islem();
-void terim();
-void faktor();
-void sayi();
-void harf();
-void bitis_op();
 
-int isEqual(char *str1, char *str2);
-int isCorrectDataType(char *str);
+/* Custom functions */
+void program();
+void start_op();
+void finish_op();
+void var();
+void type();
+void id();
+void id2();
+void expr();
+void term();
+void factor();
+void digit();
+void letter();
+void assign_op();
+
+
 void err();
+
 
 
 
@@ -78,7 +80,7 @@ void err();
 #define DIV_OP 24
 #define LEFT_PAREN 25
 #define RIGHT_PAREN 26
-/* Custom Token codes */
+/* Custom token codes */
 #define VAR 12
 #define START_OP 30
 #define FINISH_OP 31
@@ -89,7 +91,7 @@ void err();
 /* Main driver */
 int main() {
 	if ((in_fp = fopen("ex.txt", "r")) == NULL)
- 		printf("Hata. \n");
+ 		printf("Dosya Okuma Hatası. \n");
  	else {
  		getChar();
  	do {
@@ -142,13 +144,13 @@ int lookup(char ch) {
 			break;
 
 		/* Start operator assigned to "<" */
-		case '<':
+		case '{':
  			addChar();
  			nextToken = START_OP;
  			break;
 
 		/* Finish operator assigned to ">" */
-		case '>':
+		case '}':
  			addChar();
  			nextToken = FINISH_OP;
  			break;
@@ -251,222 +253,169 @@ int lex() {
 } /* End of function lex */
 
 
+/* Custom functions */
 
-
-
-
-
-
-
-
-
-
-
-/* Function program
- * <program> -> <bas_op> + <deg> + <atama_op> + <cumle>
- * This function will parse the given grammar and print the result of the parsing.
- */
+/* <program> -> <start_op> <var> <assign_op> <expr> <finish_op> */
 void program(){
-	bas_op();
-	deg();
-	atama_op();
-	cumle();
-	bitis_op();
+	printf("Program Baslatiliyor...\n");
+	start_op();
+	var();
+	assign_op();
+	expr();
+	finish_op();
 }
 
-/* Function bas_op
- * <bas_op> -> _
- * This function will parse the given grammar and print the result of the parsing.
- */
-void bas_op(){
-	printf("bas_op: %d\n", nextToken);
-	if(nextToken ==  START_OP ){
+/* <start_op> -> < */
+void start_op(){
+	printf("Giris --> <start_op>\n");
+	if(nextToken == START_OP){
 		lex();
-
 	}
 	else{
+		printf("Hata: <start_op> bekleniyor.\n");
 		err();
 	}
+	printf("Cikis --> <start_op>\n");
 }
 
-/* Function deg
- * <deg> -> <harf> <degisken>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void deg(){
-	printf("Deg: %d\n", nextToken);
-	harf();
-	degisken();
+/* <finish_op> -> > */
+void finish_op(){
+	printf("Giris --> <finish_op>\n");
+	printf("nextToken: %d\n", nextToken);
+	if(nextToken == FINISH_OP){
+		lex();
+		printf("Program Sonlandiriliyor...\n");
+		//exit(0);
+	} else {
+		printf("Hata: <finish_op> bekleniyor.\n");
+		err();
+	}
+	printf("Cikis --> <finish_op>\n");
 }
 
-/* Function degisken
- * <degisken> -> <harf> <degisken> | <sayi> <degisken> | <empty>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void degisken(){
-	printf("degisken: %d\n", nextToken);
+/* <var> -> <type> <id> */
+void var(){
+	printf("Giris --> <var>\n");
+	type();
+	id();
+	printf("Cikis --> <var>\n");
+}
+
+/* <type> -> int */
+void type(){
+	printf("Giris --> <type>\n");
 	if(nextToken == VAR){
 		lex();
+	}
+	else{
+		printf("Hata: <type> bekleniyor.\n");
+		err();
+	}
+	printf("Cikis --> <type>\n");
+}
 
-		degisken();
+/* <id> -> <letter> <id2> */
+void id(){
+	printf("Giris --> <id>\n");
+	letter();
+	id2();
+	printf("Cikis --> <id>\n");
+}
+
+/* <id2> -> <letter> <id2> | <digit> <id2> | ε */
+void id2(){
+	printf("Giris --> <id2>\n");
+	if(nextToken == IDENT){
+		lex();
 	}
 	else if(nextToken == INT_LIT){
 		lex();
-
-		degisken();
 	}
 	else{
 		return;
 	}
+	printf("Cikis --> <id2>\n");
 }
 
-/* Function atama_op
- * <atama_op> -> =
- * This function will parse the given grammar and print the result of the parsing.
- */
-void atama_op(){
+/* <expr> -> <term> - <expr> | <term> + <expr> | <term> */
+void expr(){
+	printf("Giris --> <expr>\n");
+	term();
+	if(nextToken == SUB_OP){
+		lex();
+		expr();
+	}
+	else if(nextToken == ADD_OP){
+		lex();
+		expr();
+	}
+	printf("Cikis --> <expr>\n");
+}
+
+/* <term> -> <factor> / <term> | <factor> * <term> | <factor> */
+void term(){
+	printf("Giros --> <term>\n");
+	factor();
+	if(nextToken == DIV_OP){
+		lex();
+		term();
+	}
+	else if(nextToken == MULT_OP){
+		lex();
+		term();
+	}
+	printf("Cikis --> <term>\n");
+}
+
+/* <factor> -> <digit> <factor> | <digit> */
+void factor(){
+	printf("Giris --> <factor>\n");
+	digit();
+	if(nextToken == INT_LIT){
+		lex();
+	}
+	printf("Cikis --> <factor>\n");
+}
+/* <digit> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 */
+void digit(){
+	printf("Giris --> <digit>\n");
+	if(nextToken == INT_LIT){
+		lex();
+	}
+	printf("Cikis --> <digit>\n");
+}
+
+/* <letter> -> a | b | c | ç | d | e | f | g | ğ | h | ı | i | j | k | l | m | n | o | ö | p | r | s | ş | t | u | ü | v | y | z */
+void letter(){
+	printf("Giris --> <letter>\n");
+	if(nextToken == IDENT){
+		lex();
+	}
+	printf("Cikis --> <letter>\n");
+}
+
+/* <assign_op> -> = */
+void assign_op(){
+	printf("Giris --> <assign_op>\n");
 	if(nextToken == ASSIGN_OP){
 		lex();
-
 	}
 	else{
+		printf("Hata	: <assign_op> bekleniyor.\n");
 		err();
 	}
+	printf("Cikis --> <assign_op>\n");
 }
 
-/* Function cumle
- * <cumle> -> <islem> | <faktör>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void cumle(){
-	if(nextToken == INT_LIT){
-		printf("\n Faktor");
-		faktor();
-
-	}
-	else{
-		printf("işlem");
-		islem();
-	}
+/* Error function */
+void err(){
+	printf("Hata fonksiyonu calisti. \n");
+	exit(0);
 }
 
-
-/* Function islem
- * <islem> -> <terim> + <terim> | <terim> - <terim>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void islem(){
-	terim();
-	if(nextToken == ADD_OP){
-		lex();
-
-		terim();
-	}
-	else if(nextToken == SUB_OP){
-		lex();
-
-		terim();
-	}
-	else{
-		err();
-	}
-}
-
-/* Function terim
- * <terim> -> <faktör> * <faktör> | <faktör> / <faktör>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void terim(){
-	faktor();
-	if(nextToken == MULT_OP){
-		lex();
-
-		faktor();
-	}
-	else if(nextToken == DIV_OP){
-		lex();
-
-		faktor();
-	}
-	else{
-		err();
-	}
-}
-
-/* Function faktor
- * <faktör> -> <sayi> <faktör> | <sayi>
- * This function will parse the given grammar and print the result of the parsing.
- */
-void faktor(){
-	sayi();
-	if(nextToken == INT_LIT){
-		lex();
-
-		faktor();
-	}
-	else{
-		if (nextToken == LEFT_PAREN) {
-			lex();
-			cumle();
-			if (nextToken == RIGHT_PAREN)
-				lex();
-			else
-				printf("Hata.");
-		} /* End of if (nextToken == ... */
-	}
-}
-
-/* Function sayi
- * <sayi> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
- * This function will parse the given grammar and print the result of the parsing.
- */
-void sayi(){
-	printf("Sayi: %d\n", nextToken);
-	if(nextToken == INT_LIT){
-		lex();
-	}
-	else{
-		err();
-	}
-}
-
-
-/* Function harf
- * <harf> -> a | b |c | ç | d | e | f | g | ğ | h | ı | i | j | k | l | m | n | o | ö | p | r | s | ş | t | u | ü | v | y | z
- * This function will parse the given grammar and print the result of the parsing.
- */
-void harf(){
-	printf("Harf: %d\n", nextToken);
-	if(nextToken == IDENT ){
-		printf("burada hata var");
-		lex();
-
-	}
-	else{
-		err();
-	}
-}
-
-/* Function bitis_op
- * <bitis_op> -> _
- * This function will parse the given grammar and print the result of the parsing.
- */
-void bitis_op(){
-	printf("\n bitis_op: %d\n", nextToken);
-	if(nextToken == FINISH_OP){
-		lex();
-
-	}
-	else{
-		err();
-	}
-}
-
-/* Function isEqual
- * This function will compare two strings and return 1 if they are equal, otherwise it will return 0.
- */
-int isEqual(char *str1, char *str2){
-	if(strcmp(str1, str2) == 0){
+/* isCorrectDataType function */
+int isCorrectDataType(char *lexeme){
+	if(strcmp(lexeme, "int") == 0 || strcmp(lexeme, "baris") == 0 || strcmp(lexeme, "furkan") == 0 || strcmp(lexeme, "deniz") == 0){
 		return 1;
 	}
 	else{
@@ -474,38 +423,11 @@ int isEqual(char *str1, char *str2){
 	}
 }
 
-/* Function isCorrectDataType
- * This function will check if the given string is a correct data type.
- * If the string is a correct data type, it will return 1, otherwise it will return 0.
- */
-/* isCorrectDataType - In the method with type restriction,
-only digit and string values are defined. */
-
-
-int isCorrectDataType(char* string) {
-	if (!strcmp(string, "sayi") || !strcmp(string, "soz"))
-		return 1;
-	else{
-		return 0;
-	}
-}
-
-/* Function err
- * This function will print an error message and exit the program.
- */
-void err() {
-	printf("Error Function");
-	exit(1);
-}
+/* End of custom functions */
 
 
 
-/* generete test txt file codes.
- *
- * _a1 = 1 + 2
- *
- * /
-	*/
+
 
 
 

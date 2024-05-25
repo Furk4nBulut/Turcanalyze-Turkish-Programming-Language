@@ -1,0 +1,8 @@
+{
+    result = (a + b) * (c - d) / e;
+    if (flag) {
+        result = result + 1;
+    } else {
+        result = result - 1;
+    }
+}

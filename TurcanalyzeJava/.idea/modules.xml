@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/TurcanalyzeJava.iml" filepath="$PROJECT_DIR$/TurcanalyzeJava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/deniz/deniz.iml" filepath="$PROJECT_DIR$/deniz/deniz.iml" />
+    </modules>
+  </component>
+</project>

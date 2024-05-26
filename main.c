@@ -136,7 +136,7 @@ void err();
 int main() {
     setlocale(LC_ALL, "Turkish");
 	printf("ğşğşğği");
-	if ((in_fp = fopen("ex2.txt", "r")) == NULL)
+	if ((in_fp = fopen("ex4.txt", "r")) == NULL)
 
 		printf("Dosya Okuma Hatas?. \n");
 	else {

@@ -1,3 +1,1 @@
-{ eger sayi x == 5 ise { sayi   x = 6 } degilse { sayi x = 4}
- }
-
+{eger sayi barış == 5 ise { sayi barış = 6 } degilse { sayi barış = 4 } sayi öğüiş = 88}

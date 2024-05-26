@@ -135,8 +135,7 @@ void err();
 /* Main driver */
 int main() {
     setlocale(LC_ALL, "Turkish");
-	printf("ğşğşğği");
-	if ((in_fp = fopen("ex4.txt", "r")) == NULL)
+	if ((in_fp = fopen("ex1.txt", "r")) == NULL)
 
 		printf("Dosya Okuma Hatas?. \n");
 	else {
@@ -203,9 +202,9 @@ int lookup(char ch) {
 		break;
 	default:
 			addChar();
-			if (strcmp(lexeme, "while") == 0)
+			if (strcmp(lexeme, "surece") == 0)
 				nextToken = WHILE;
-			else if (strcmp(lexeme, "do") == 0)
+			else if (strcmp(lexeme, "yap") == 0)
 				nextToken = DO;
 			else
 				nextToken = EOF;
@@ -439,6 +438,7 @@ void id2() {
 		lex();
 	}
 	else {
+		printf("Gecersiz karakter. \n");
 		return;
 	}
 	printf("Cikis --> <id2>\n");
@@ -538,6 +538,8 @@ void eger_ifadesi() {
 	program();
 
 	degilse();
+
+
 	program();
 
 	printf("Cikis --> <eger_ifadesi>\n");

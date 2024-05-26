@@ -1,3 +1,18 @@
 {
-eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 4 }
-}
+       sayi x = 3
+       surece sayi == 3 yap
+       {
+            eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 4 }
+            sayi x = 88
+            surece sayi x == 5 yap
+            {
+                sayi deneme  = 96
+                eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 55 }
+            }
+
+            eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 59599 }
+
+       }
+            eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 59599 }
+            sayi x = 5
+       }

@@ -26,22 +26,17 @@ FILE* in_fp, * fopen();
 <var> -> <type> <id>
 <type> -> int
 <id> -> <letter> <id2>
-<id2> -> <letter> <id2> | <digit> <id2> | ?
+<id2> -> <letter> <id2> | <digit> <id2> | ε
 <expr> -> <term> - <expr> | <term> + <expr> | <term>
 <term> -> <factor> / <term> | <factor> * <term> | <factor>
 <factor> -> <digit> <factor> | <digit>
 <digit> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-<letter> -> a | b | c | ç | d | e | f | g | ? | h | ? | i | j | k | l | m | n | o | ö | p | r | s | ? | t | u | ü | v | y | z
+<letter> -> a | b | c | ç | d | e | f | g | ğ | h | ı | i | j | k | l | m | n | o | ö | p | r | s | ş | t | u | ü | v | y | z
 <assign_op> -> =
 <ise>-> ise
 <degilse> -> degilse
 <eger> -> eger
 <karsilastirma_op> -> < | > | <= | >= | == | !=
-
-<while_ifadesi> -> <while_op> <var> <karsilastirma_op> <factor> <do_op> <program>
-<while_op> -> while
-<do_op> -> do
-
 
 *
  * /
@@ -79,12 +74,6 @@ void degilse();
 void ise();
 void ifelsekontrol();
 
-/* Custom Funcs for While */
-void while_ifadesi();
-void while_op();
-void do_op();
-
-
 
 void err();
 
@@ -121,12 +110,6 @@ void err();
 #define EGER_IFADESI 50
 #define ISE 51
 
-/* Custom token codes for While */
-#define WHILE 52
-#define DO 53
-
-
-
 
 
 
@@ -135,9 +118,7 @@ void err();
 /* Main driver */
 int main() {
     setlocale(LC_ALL, "Turkish");
-	printf("ğşğşğği");
 	if ((in_fp = fopen("ex2.txt", "r")) == NULL)
-
 		printf("Dosya Okuma Hatas?. \n");
 	else {
 		getChar();
@@ -202,14 +183,9 @@ int lookup(char ch) {
 		nextToken = FINISH_OP;
 		break;
 	default:
-			addChar();
-			if (strcmp(lexeme, "while") == 0)
-				nextToken = WHILE;
-			else if (strcmp(lexeme, "do") == 0)
-				nextToken = DO;
-			else
-				nextToken = EOF;
-			break;
+		addChar();
+		nextToken = EOF;
+		break;
 	}
 	return nextToken;
 }
@@ -280,14 +256,10 @@ int lex() {
 			nextToken = DEGILSE;
 		else if (strcmp(lexeme, "e?ittir") == 0)
 			nextToken = KARSILASTIRMA_DURUMU;
-		else if (strcmp(lexeme, "b?y?kt?r") == 0)
+		else if (strcmp(lexeme, "b�y�kt�r") == 0)
 			nextToken = KARSILASTIRMA_DURUMU;
-		else if (strcmp(lexeme, "k???kt?r") == 0)
+		else if (strcmp(lexeme, "k���kt�r") == 0)
 			nextToken = KARSILASTIRMA_DURUMU;
-		else if (strcmp(lexeme, "surece") == 0)
-			nextToken = WHILE;
-		else if (strcmp(lexeme, "yap") == 0)
-			nextToken = DO;
 
 		else {
 
@@ -315,7 +287,6 @@ int lex() {
 		lexeme[1] = 'O';
 		lexeme[2] = 'F';
 		lexeme[3] = 0;
-		printf("Program bitti.\n");
 		break;
 	} 	/* End of switch */
 
@@ -327,50 +298,16 @@ int lex() {
 
 /* Custom functions */
 
-/* <program> -> <start_op> <var> <assign_op> <expr> <finish_op> | <starp_op> <while_ifadesi> <finish_op> | <star_op> <ifelse> <finish_op>  */
-// Main program
+/* <program> -> <start_op> <var> <assign_op> <expr> <finish_op> */
 void program() {
 	printf("Program Baslatiliyor...\n");
 	start_op();
-
 	ifelsekontrol();
-
-	// Function to handle repetitive VAR checks
-	void handle_var_sequence() {
-		while (nextToken == VAR) {
-			var();
-			assign_op();
-			expr();
-			if (nextToken == WHILE) {
-				while_ifadesi();
-				return;
-			}
-			if(nextToken == EGER) {
-				eger_ifadesi();
-				return;
-			}
-			if (nextToken == VAR) {
-				handle_var_sequence();
-			}
-		}
-	}
-
-	if (nextToken == WHILE) {
-		while_ifadesi();
-	} else if (nextToken == VAR) {
-		handle_var_sequence();
-	}
-
-	while (nextToken != FINISH_OP) {
-		ifelsekontrol();
-		handle_var_sequence();
-	}
-
+	var();
+	assign_op();
+	expr();
 	finish_op();
 }
-
-
-
 
 /* <start_op> -> < */
 void start_op() {
@@ -391,7 +328,8 @@ void finish_op() {
 	printf("nextToken: %d\n", nextToken);
 	if (nextToken == FINISH_OP) {
 		lex();
-
+		printf("Program Sonlandiriliyor...\n");
+		exit(0);
 	}
 	else {
 		printf("Hata: <finish_op> bekleniyor.\n");
@@ -492,7 +430,7 @@ void digit() {
 	printf("Cikis --> <digit>\n");
 }
 
-/* <letter> -> a | b | c | ? | d | e | f | g | ? | h | ? | i | j | k | l | m | n | o | ? | p | r | s | ? | t | u | ? | v | y | z */
+/* <letter> -> a | b | c | � | d | e | f | g | ? | h | ? | i | j | k | l | m | n | o | � | p | r | s | ? | t | u | � | v | y | z */
 void letter() {
 	printf("Giris --> <letter>\n");
 	if (nextToken == IDENT) {
@@ -534,12 +472,14 @@ void eger_ifadesi() {
 	karsilastirma_op();
 	factor();
 	ise();
-
-	program();
-
+	var();
+	assign_op();
+	factor();
 	degilse();
-	program();
-
+	var();
+	assign_op();
+	factor();
+	finish_op();
 	printf("Cikis --> <eger_ifadesi>\n");
 }
 
@@ -586,59 +526,17 @@ void ise() {
 void ifelsekontrol() {
 	if (nextToken == EGER) {
 		eger_ifadesi();
-	} else if (nextToken == WHILE) {
-		while_ifadesi();
+		lex();
 	}
 }
-
 /* correct data type func for if else and program */
 int isCorrectDataType(char* lexeme) {
-	if (strcmp(lexeme, "sayi") == 0) {
+	if (strcmp(lexeme, "int") == 0) {
 		return 1;
 	}
 	else {
 		return 0;
 	}
 }
-
-/* <while_ifadesi> -> <while_op> <var> <karsilastirma_op> <factor> <do_op> <program> */
-void while_ifadesi() {
-	printf("Giris --> <while_ifadesi>\n");
-	while_op();
-	var();
-	karsilastirma_op();
-	karsilastirma_op();
-	factor();
-	do_op();
-	program();
-	printf("Cikis --> <while_ifadesi>\n");
-}
-
-/* <while_op> -> while */
-void while_op() {
-	printf("Giris --> <while_op>\n");
-	if (nextToken == WHILE) {
-		lex();
-	} else {
-		printf("Hata: <while_op> bekleniyor.\n");
-		err();
-	}
-	printf("Cikis --> <while_op>\n");
-}
-
-/* <do_op> -> do */
-void do_op() {
-	printf("Giris --> <do_op>\n");
-	if (nextToken == DO) {
-		lex();
-	} else {
-		printf("Hata: <do_op> bekleniyor.\n");
-		err();
-	}
-	printf("Cikis --> <do_op>\n");
-}
-
-
-
 
 /* End of custom functions */

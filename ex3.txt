@@ -1,0 +1,2 @@
+{ eğer int x ==  ise int x = 6 değilse int x = 4}
+

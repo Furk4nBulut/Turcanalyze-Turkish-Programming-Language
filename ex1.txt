@@ -1,0 +1,3 @@
+{
+eger sayi x == 5 ise { sayi x = 6 } degilse { sayi x = 4 }
+}
